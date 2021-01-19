@@ -1,0 +1,35 @@
+.LoginForm{
+    display: flex;
+    flex: 5;
+    width: 100%;
+    justify-content: center;
+}
+
+.Login-form {
+
+    display: flex;
+    flex: 5;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem;
+}
+
+.Login-form button{
+    background: linear-gradient(to right top, #54b6a4, #3eb9cc);
+    box-shadow: 6px 6px 20px rgba(122, 122, 122, 0.212);
+    cursor: pointer;
+    outline: none;
+    border-style: none;
+    padding: 0.5rem;
+    color: #ffffff;
+    opacity: 0.9;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    width: 50%;
+}
+
+.Login-form button:hover {
+    width: 55%;
+}

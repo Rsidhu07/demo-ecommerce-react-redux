@@ -1,0 +1,24 @@
+.Nav {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin:2rem;
+}
+
+ul{
+    display: flex;
+    width: 60%;
+    justify-content: space-between;
+    font-size: 1.2rem;
+}
+
+li {
+    list-style: none;
+}
+
+.nav-link {
+    text-decoration: none;
+}
+

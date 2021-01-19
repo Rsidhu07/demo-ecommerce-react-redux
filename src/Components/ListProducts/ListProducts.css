@@ -1,0 +1,71 @@
+.ListProducts {
+    display: flex;
+    flex: 5;
+    width: 100%;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    overflow: hidden;
+    padding: 2rem;
+}
+
+.card {
+    display: flex;
+    background: linear-gradient(
+      to left top,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0.5)
+    );
+    border-radius: 1rem;
+    margin: 2rem 0;
+    box-shadow: 6px 6px 20px rgba(122, 122, 122, 0.212);
+    justify-content: space-between;
+    padding: 2rem;
+    height:27rem;
+    width: 27rem;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+.card button {
+
+    background: linear-gradient(to right top, #8de2d3, #a2eaf5);
+    box-shadow: 6px 6px 20px rgba(122, 122, 122, 0.212);
+    cursor: pointer;
+    outline: none;
+    border-style: none;
+    padding: 0.5rem;
+    color: #ffffff;
+    opacity: 0.9;
+    font-weight: 600;
+    position: absolute;
+    border-radius: 0.5rem;
+}
+
+.card button:nth-child(1){
+
+    right: 4%;
+}
+
+.card button:nth-child(2){
+    height:2rem;
+    width: 5.7rem;
+    right:4%;
+    top:20%;
+}
+
+.Page-Numbers {
+    position: absolute;
+    bottom: 0.5%;
+    width: 20%;
+}
+
+.Page-Numbers ul {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.Page-Numbers li{
+    cursor: pointer;
+}

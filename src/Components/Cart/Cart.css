@@ -1,0 +1,6 @@
+.Cart{
+    display: flex;
+    flex: 5;
+    width: 100%;
+    justify-content: center;
+}
