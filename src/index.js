@@ -8,6 +8,7 @@ import { createStore, compose, applyMiddleware, combineReducers } from 'redux';
 import productsReducer from './store/Reducers/products';
 import loggedInReducer from './store/Reducers/loggedIn';
 import thunk from 'redux-thunk';
+import { CookiesProvider } from 'react-cookie';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -19,14 +20,15 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 const app = (
-
-  <Provider store= {store}>
-    <BrowserRouter>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </BrowserRouter>
-  </Provider>
+  <CookiesProvider>
+    <Provider store= {store}>
+      <BrowserRouter>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </BrowserRouter>
+    </Provider>
+  </CookiesProvider>
 )
 
 

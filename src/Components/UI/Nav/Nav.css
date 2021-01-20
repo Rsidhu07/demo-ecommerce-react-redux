@@ -18,6 +18,21 @@ li {
     list-style: none;
 }
 
+ul li button{
+    background: linear-gradient(to right top, #8de2d3, #a2eaf5);
+    box-shadow: 6px 6px 20px rgba(122, 122, 122, 0.212);
+    cursor: pointer;
+    outline: none;
+    border-style: none;
+    padding: 0.5rem;
+    color: #4c9ab3;
+    opacity: 0.9;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    width: 5rem;
+    height: 2rem;
+}
+
 .nav-link {
     text-decoration: none;
 }

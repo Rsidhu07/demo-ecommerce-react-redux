@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LoginForm.css';
 import checkValidity from '../formValidation';
 import convertFormDataToArray from '../convertFormDataToArray';
 import Input from '../UI/Input/Input';
+import { auth } from '../../firebase';
+import {connect} from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import {updateLoggedInUserID} from '../../store/Actions/actions';
 
-const LoginForm = () => {
+const LoginForm = (props) => {
 
 
     const initialState = {
@@ -50,6 +55,33 @@ const LoginForm = () => {
     };
 
     const [formValues,setFormValues] = useState(initialState);
+    const [errorMsg, setErrorMsg] =useState(null);
+    const [cookies, setCookie] = useCookies([]);
+
+    const {onUpdateLoggedInUserID, history, isloggedIn} = props;
+
+    const authListener = ()=>{
+        auth.onIdTokenChanged(user => {
+            if(user){
+                onUpdateLoggedInUserID(user.uid);
+                setCookie('UserId', user.uid, {path:'/'});
+                setCookie('userIsLoggedIn',true, {path:'/'});
+
+                history.push('/');
+                
+            } else {
+                onUpdateLoggedInUserID(null);
+                setCookie('UserId', null, {path:'/'});
+                setCookie('userIsLoggedIn',false, {path:'/'});
+            }
+        });
+    };
+
+    useEffect(() => {
+        
+        authListener();
+        
+    }, []);
 
 
     const inputChangeHandler = (e,id,formData) => {
@@ -84,6 +116,28 @@ const LoginForm = () => {
         console.log('formData is =>',updatedFormElement.valid);
     };
 
+    const signInWithEmailAndPasswordHandler = (event, formData) => {
+
+        event.preventDefault();
+        const dataToBeSend ={
+            password: formData.password.value,
+            email: formData.email.value,
+        };
+
+        const { email, password} = dataToBeSend;
+        auth.signInWithEmailAndPassword(email, password)
+        .then(user => {
+            console.log('user signed in ', user);
+            onUpdateLoggedInUserID(user.uid);
+            setCookie('UserId', user.uid, {path:'/'});
+            setCookie('userIsLoggedIn',true, {path:'/'});
+        })
+        .catch(error => {
+          setErrorMsg("Error signing in with password and email!");
+          console.error("Error signing in with password and email", error);
+        });
+      };
+
     return (
         <div className='LoginForm'>
            <form className='Login-form'>
@@ -102,10 +156,24 @@ const LoginForm = () => {
                         changed = {event => inputChangeHandler(event,formElement.id,formValues.formData)}  />
                     );
                 })}
-                <button type='button' >Login</button>
+                <button type='button' onClick={e => {signInWithEmailAndPasswordHandler(e,formValues.formData)}} >Login</button>
             </form>          
         </div>
     )
-}
+};
 
-export default LoginForm;
+const mapStateToProps = state => {
+    return {
+        loggedInID: state.logged.userLoggedInID,
+        isloggedIn: state.logged.isLoggedIn,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onUpdateLoggedInUserID:(userId) => { dispatch(updateLoggedInUserID(userId))}
+    }
+};
+
+
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(LoginForm));

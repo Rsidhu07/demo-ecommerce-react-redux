@@ -28,6 +28,10 @@
     width: 50%;
 }
 
+.Signup-form button:disabled {
+    background: none;
+}
+
 .Signup-form button:hover {
     width: 55%;
 }

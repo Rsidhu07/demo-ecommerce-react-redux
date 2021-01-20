@@ -13,7 +13,7 @@
     width: 100%;
     justify-content: space-around;
     align-items: center;
-    padding: 1rem;
+    padding: 0 4rem 4rem;
 }
 
 .Login-form button{
@@ -27,9 +27,13 @@
     opacity: 0.9;
     font-weight: 600;
     border-radius: 0.5rem;
-    width: 50%;
+    width: 20%;
+}
+
+.Login-form button:disabled {
+    background: none;
 }
 
 .Login-form button:hover {
-    width: 55%;
+    width: 22%;
 }

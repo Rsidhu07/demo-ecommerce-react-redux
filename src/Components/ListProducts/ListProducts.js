@@ -1,12 +1,19 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState} from 'react';
 import './ListProducts.css';
 import {connect} from 'react-redux';
-import { gettingProducts } from '../../store/Actions/actions';
+import { gettingProducts, updateLoggedInUserID } from '../../store/Actions/actions';
+import Spinner from '../UI/Spinner/Spinner';
+import {useCookies} from 'react-cookie';
+import { auth } from '../../firebase';
 
-const dynamicLi = (onPageNumberClickedHandler, prods,scrollToTopRef) => {
+const dynamicLi = (onPageNumberClickedHandler, prods,) => {
+
     const li = [];
+
     for(let i=0; i<4;i++){
+
         li.push((<li href='#top' key={Math.random()*2} value={i+1}
+
     onClick={ () => { onPageNumberClickedHandler(prods, i+1) }}>{i+1}</li>));
    }
 
@@ -20,20 +27,38 @@ const scrollToTop =() => window.scrollTo({top: 0, behavior: 'smooth'});
 
 const ListProducts = (props) => {
 
-    const {onGetProducts, prods} = props; 
+    const {onGetProducts, prods, onUpdateLoggedInUserID} = props; 
+
+    const [cookies, setCookie] = useCookies([]);
 
     useEffect(()=>{
         onGetProducts();
-    },[]);
+    },[onGetProducts]);
 
     useEffect(()=>{
         const paginatedProductData = prods.slice(0,5);
         setPaginatedData(paginatedProductData);
     }, [prods]);
 
-    const [paginatedData, setPaginatedData] = useState([]);
+    useEffect(() => {
+        
+        auth.onIdTokenChanged(user => {
+            if(user){
+                onUpdateLoggedInUserID(user.uid);
+                setCookie('UserId', user.uid, {path:'/'});
+                setCookie('userIsLoggedIn',true, {path:'/'});
 
-    const scrollToTopRef = useRef(null);
+                
+            } else {
+                onUpdateLoggedInUserID(null);
+                setCookie('UserId', null, {path:'/'});
+                setCookie('userIsLoggedIn',false, {path:'/'});
+            }
+        });
+        
+    }, [onUpdateLoggedInUserID,setCookie]);
+
+    const [paginatedData, setPaginatedData] = useState([]);
 
     const onPageNumberClickedHandler = (datatToBePaginated,pageNum) => {
 
@@ -45,19 +70,20 @@ const ListProducts = (props) => {
         console.log('event is===>>', pageNum, paginatedData);
     };
 
+
    
 
     return (
-        <div className='ListProducts' ref={scrollToTopRef} >
-            
-            {
+        <div className='ListProducts' >
+
+            {props.loading ? <Spinner/> : 
                 paginatedData.map( product => {
                     return (
                         <div key={product.id} className="card">
                             <button type='button'>Add To Cart</button>
                             <button type='button'>Buy Now</button>
                             <img src={product.image} width ='120' height= '100' alt="" />
-                            <p>{product.category}</p>
+                            <p>{product.category.toUpperCase()}</p>
                             <div className="card-info">
                                 <h2>{product.title}</h2>
                                 <p>{product.description}</p>
@@ -67,10 +93,12 @@ const ListProducts = (props) => {
                     );
                 })
             }
+            
+            
 
             <div className='Page-Numbers'>
                 <ul>
-                   {dynamicLi(onPageNumberClickedHandler,prods,scrollToTopRef).map(li=>li)}
+                   {dynamicLi(onPageNumberClickedHandler,prods).map(li=>li)}
                 </ul>
             </div>
             
@@ -82,14 +110,15 @@ const mapStateToProps =(state) => {
     return {
         prods: state.prods.products,
         loading: state.prods.loading,
-        loggedIn: state.logged.userLoggedIn,
-        isloggedIn: state.logged.isloggedIn,
+        loggedInID: state.logged.userLoggedInID,
+        isloggedIn: state.logged.isLoggedIn,
     };
 };
 
 const mapDispatchToprops = dispatch => {
     return {
-        onGetProducts: () => { dispatch(gettingProducts()) }
+        onGetProducts: () => { dispatch(gettingProducts()) },
+        onUpdateLoggedInUserID:(userId) => { dispatch(updateLoggedInUserID(userId))}
     }
 }
 

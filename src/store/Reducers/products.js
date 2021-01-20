@@ -24,7 +24,8 @@ const products = ( state = initialState, action) => {
         case actionTypes.GETTING_PRODUCTS_SUCCESS:
             return {
                 ...state,
-                products: action.payload
+                products: action.payload,
+                loading:false
             };
     
         default:

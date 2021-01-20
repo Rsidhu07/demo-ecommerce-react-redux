@@ -1,10 +1,34 @@
+import * as actions from '../Actions/actions';
+
+
+
 const initialState = {
-    isloggedIn : false,
-    userLoggedIn: []
+    isLoggedIn : false,
+    userLoggedInID: null
 };
 
 const users = ( state = initialState, action) => {
-    return state;
+   
+    switch (action.type) {
+        case actions.UPDATE_LOGGED_IN_USER_ID:
+            console.log('payload is ===>>', action.payload);
+            if(action.payload){
+                return {
+                    ...state,
+                    isLoggedIn: true,
+                    userLoggedInID: action.payload
+                };
+        
+            }else{
+                return {
+                    ...state,
+                    isLoggedIn:false
+                };
+            }
+            
+        default:
+            return state;
+    }
 };
 
 export default users;

@@ -3,6 +3,15 @@ import myFetch from "../../Components/myFetch";
 export const GETTING_PRODUCTS_BEGIN = 'GETTING_PRODUCTS_BEGIN';
 export const GETTING_PRODUCTS_FAILED = 'GETTING_PRODUCTS_FAILED';
 export const GETTING_PRODUCTS_SUCCESS = 'GETTING_PRODUCTS_SUCCESS';
+export const UPDATE_LOGGED_IN_USER_ID = 'UPDATE_LOGGED_IN_USER_ID';
+
+
+export const updateLoggedInUserID =(userId) => {
+    return {
+        type: UPDATE_LOGGED_IN_USER_ID,
+        payload : userId
+    }
+};
 
 
 export const gettingProductsBegin = () => {
