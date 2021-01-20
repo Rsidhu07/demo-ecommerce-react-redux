@@ -54,6 +54,13 @@
     top:20%;
 }
 
+.card button:disabled {
+    background-color: rgb(161, 235, 161);
+    background: none;
+    color: rgb(10, 10, 10);
+    opacity: 0.8;
+}
+
 .Page-Numbers {
     position: absolute;
     bottom: 0.5%;

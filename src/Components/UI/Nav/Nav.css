@@ -16,6 +16,8 @@ ul{
 
 li {
     list-style: none;
+    display: flex;
+    align-items: center;
 }
 
 ul li button{
@@ -35,5 +37,9 @@ ul li button{
 
 .nav-link {
     text-decoration: none;
+}
+
+h3{
+    font-size: 1.2rem;
 }
 

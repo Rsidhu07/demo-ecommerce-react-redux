@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './SignupForm.css';
 import Input from '../UI/Input/Input';
 import checkValidity from '../formValidation';
-import {auth, generateUserDocument} from '../../firebase';
+import {auth, generateUserDocument } from '../../firebase';
 import {connect } from 'react-redux';
 import convertFormDataToArray from '../convertFormDataToArray';
 import { updateLoggedInUserID } from '../../store/Actions/actions';
-import { useCookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
+import { withCookies } from 'react-cookie';
 
 const SignupForm = (props) => {
 
@@ -88,35 +88,20 @@ const SignupForm = (props) => {
         isValidForm: false
 
     };
+
+    const {onUpdateLoggedInUserID, history, cookies} =  props;
+
+    useEffect(()=>{
+        if(JSON.parse(cookies.get('userIsLoggedIn'))){
+            history.push('/');
+        }
+    }, []);
     
-    const {onUpdateLoggedInUserID, history} =  props;
 
     const [formValues,setFormValues] = useState(initialState);
     const [errorMsg, setErrorMsg] =useState(null);
-    const [cookies, setCookie] = useCookies([]);
 
     
-    
-
-    // useEffect(() => {
-        
-    //     auth.onIdTokenChanged(user => {
-    //         if(user){
-    //             onUpdateLoggedInUserID(user.uid);
-    //             setCookie('UserId', user.uid, {path:'/'});
-    //             setCookie('userIsLoggedIn',true, {path:'/'});
-
-                
-    //         } else {
-    //             onUpdateLoggedInUserID(null);
-    //             setCookie('UserId', null, {path:'/'});
-    //             setCookie('userIsLoggedIn',false, {path:'/'});
-    //         }
-    //     });
-        
-    // }, [onUpdateLoggedInUserID,setCookie,history]);
-
-      
     console.log('all cookies are ====>>>> ', cookies.userIsLoggedIn, props);
 
 
@@ -171,6 +156,13 @@ const SignupForm = (props) => {
           generateUserDocument(user, {name,phoneNumber});
           setFormValues(initialState);
           alert('Successfully registered');
+          const userDetails = {
+            name, 
+            email,
+            phoneNumber
+          };
+          console.log('userdtails when clicked signup are ====>>', userDetails, cookies.set('userDetails', userDetails, {path:'/'}));
+          cookies.set('userDetails', userDetails, {path:'/'});
           history.push('/');
         }
         catch(error){
@@ -218,4 +210,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(withRouter(SignupForm));
+export default connect(mapStateToProps,mapDispatchToProps)(withCookies(withRouter(SignupForm)));

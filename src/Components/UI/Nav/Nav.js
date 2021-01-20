@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Nav.css';
 import {NavLink} from  'react-router-dom';
 import {withCookies} from 'react-cookie';
-import { auth } from '../../../firebase';
+import { auth, getUserDocument } from '../../../firebase';
 import { withRouter } from 'react-router-dom';
 
 const Nav = (props) => {
@@ -11,21 +11,28 @@ const Nav = (props) => {
 
     const { cookies, history } = props;
 
+    const [userName, setUserName] = useState('');
+
+  
     useEffect(()=>{
-        console.log('runs on render');
-        setIsLoggedIn(JSON.parse(cookies.get('userIsLoggedIn')));
+        
+        const userIsLoggedIn = cookies.get('userIsLoggedIn');
+        const name = cookies.get('userDetails').name;
+        if(userIsLoggedIn){
 
-        return ()=> {
-            setIsLoggedIn(false);
+            setIsLoggedIn(JSON.parse(userIsLoggedIn));
+            setUserName(name );
         }
+    });
 
-    }, [cookies]);
+    
 
     const onSignOutHandler = () => {
         
         auth.signOut().then(()=>{
             console.log('Signed Out');
             setIsLoggedIn(false);
+            cookies.set('userDetails', null,{path:'/'} );
             history.push('/');
             
         }).catch((e => {
@@ -37,7 +44,7 @@ const Nav = (props) => {
     const signedIn =  (<ul>
                             <li><NavLink className='nav-link' to= '/'> Home </NavLink></li>
                             <li><NavLink className='nav-link' to= '/products'> Products </NavLink></li>
-                            <li><button type='button' onClick={onSignOutHandler} >SignOut</button></li>
+                            <li> <h3>Hi { userName } :</h3> <button type='button' onClick={onSignOutHandler} > SignOut</button></li>
                             <li><NavLink className='nav-link' to= '/cart'> Cart </NavLink></li>
                         </ul>
     );

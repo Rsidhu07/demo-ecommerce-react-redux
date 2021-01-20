@@ -4,6 +4,7 @@ import "firebase/firestore";
 
 
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyBSdDjCa3GH6dS0AwroTwO30v6_npfOMt4",
     authDomain: "fir-ecomm-9c279.firebaseapp.com",
@@ -16,9 +17,16 @@ const firebaseConfig = {
 
   firebase.initializeApp(firebaseConfig);
 
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
+
 
   export const generateUserDocument = async (user, additionalData) => {
+
+    console.log('generate document in firebase gets called with user', user);
     if (!user) return;
+    if(!additionalData) return getUserDocument(user);
+
     const userRef = firestore.doc(`users/${user.uid}`);
     const snapshot = await userRef.get();
     if (!snapshot.exists) {
@@ -37,18 +45,43 @@ const firebaseConfig = {
     return getUserDocument(user.uid);
   };
 
-  const getUserDocument = async uid => {
+  export const getUserDocument = async uid => {
     if (!uid) return null;
     try {
       const userDocument = await firestore.doc(`users/${uid}`).get();
-      return {
-        uid,
-        ...userDocument.data()
-      };
+
+      if(userDocument){
+      
+      console.log('user document in firebase is ===>>',userDocument.data());
+
+        return {
+          ...userDocument.data()
+        };
+      }
+      
     } catch (error) {
       console.error("Error fetching user", error);
     }
   };
 
-export const auth = firebase.auth();
-export const firestore = firebase.firestore();
+  export const updateUserDocument = async (uid, additionalData) => {
+
+    console.log('update user document in firebase gets called with user', uid);
+    if (!uid) return;
+
+    console.log('uid exists in update user document');
+
+    const userRef = firestore.doc(`users/${uid}`);
+    const snapshot = await userRef.get();
+    if (snapshot.exists) {
+      try {
+        await userRef.set({
+            cart : [additionalData]
+        }, { merge: true });
+
+      } catch (error) {
+        console.error("Error creating user document", error);
+      }
+    }
+  };
+

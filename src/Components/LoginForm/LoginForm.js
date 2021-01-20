@@ -3,10 +3,10 @@ import './LoginForm.css';
 import checkValidity from '../formValidation';
 import convertFormDataToArray from '../convertFormDataToArray';
 import Input from '../UI/Input/Input';
-import { auth } from '../../firebase';
+import { auth, getUserDocument } from '../../firebase';
 import {connect} from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import { withCookies } from 'react-cookie';
 import {updateLoggedInUserID} from '../../store/Actions/actions';
 
 const LoginForm = (props) => {
@@ -56,23 +56,24 @@ const LoginForm = (props) => {
 
     const [formValues,setFormValues] = useState(initialState);
     const [errorMsg, setErrorMsg] =useState(null);
-    const [cookies, setCookie] = useCookies([]);
+  
 
-    const {onUpdateLoggedInUserID, history, isloggedIn} = props;
+    const {onUpdateLoggedInUserID, history, isloggedIn, cookies} = props;
+
 
     const authListener = ()=>{
         auth.onIdTokenChanged(user => {
             if(user){
                 onUpdateLoggedInUserID(user.uid);
-                setCookie('UserId', user.uid, {path:'/'});
-                setCookie('userIsLoggedIn',true, {path:'/'});
+                cookies.set('UserId', user.uid, {path:'/'});
+                cookies.set('userIsLoggedIn',true, {path:'/'});
 
                 history.push('/');
                 
             } else {
                 onUpdateLoggedInUserID(null);
-                setCookie('UserId', null, {path:'/'});
-                setCookie('userIsLoggedIn',false, {path:'/'});
+                cookies.set('UserId', null, {path:'/'});
+                cookies.set('userIsLoggedIn',false, {path:'/'});
             }
         });
     };
@@ -82,6 +83,7 @@ const LoginForm = (props) => {
         authListener();
         
     }, []);
+
 
 
     const inputChangeHandler = (e,id,formData) => {
@@ -127,10 +129,20 @@ const LoginForm = (props) => {
         const { email, password} = dataToBeSend;
         auth.signInWithEmailAndPassword(email, password)
         .then(user => {
-            console.log('user signed in ', user);
-            onUpdateLoggedInUserID(user.uid);
-            setCookie('UserId', user.uid, {path:'/'});
-            setCookie('userIsLoggedIn',true, {path:'/'});
+            console.log('user signed in ', user.user['uid']);
+            cookies.set('UserId', user.uid, {path:'/'});
+            cookies.set('userIsLoggedIn',true, {path:'/'});
+
+            getUserDocument(user.user['uid'])
+            .then((userRecord) => {
+    
+                cookies.set('userDetails', userRecord, {path:'/'});
+                console.log('Successfully fetched user data', userRecord);
+    
+            })
+            .catch((error) => {
+                console.log('Error fetching user data:', error);
+            });
         })
         .catch(error => {
           setErrorMsg("Error signing in with password and email!");
@@ -176,4 +188,4 @@ const mapDispatchToProps = dispatch => {
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(withRouter(LoginForm));
+export default connect(mapStateToProps,mapDispatchToProps)(withCookies(withRouter(LoginForm)));

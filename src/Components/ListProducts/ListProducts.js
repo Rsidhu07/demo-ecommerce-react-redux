@@ -1,10 +1,20 @@
 import React, { useEffect, useState} from 'react';
 import './ListProducts.css';
 import {connect} from 'react-redux';
-import { gettingProducts, updateLoggedInUserID } from '../../store/Actions/actions';
+import { gettingProducts, updateLoggedInUserID, updateOpenCart,removeDataFromCart } from '../../store/Actions/actions';
 import Spinner from '../UI/Spinner/Spinner';
-import {useCookies} from 'react-cookie';
-import { auth } from '../../firebase';
+import {withCookies} from 'react-cookie';
+import { auth, updateUserDocument } from '../../firebase';
+
+const checkIfDataExistsAlready =(productId, productData) => {
+    
+    const found = productData.find(element => element.id === productId);
+    
+    if(found){
+        return true;
+    } 
+    return false;
+};
 
 const dynamicLi = (onPageNumberClickedHandler, prods,) => {
 
@@ -17,7 +27,6 @@ const dynamicLi = (onPageNumberClickedHandler, prods,) => {
     onClick={ () => { onPageNumberClickedHandler(prods, i+1) }}>{i+1}</li>));
    }
 
-   scrollToTop();
 
     return li;
 };
@@ -27,13 +36,26 @@ const scrollToTop =() => window.scrollTo({top: 0, behavior: 'smooth'});
 
 const ListProducts = (props) => {
 
-    const {onGetProducts, prods, onUpdateLoggedInUserID} = props; 
-
-    const [cookies, setCookie] = useCookies([]);
+    const {
+        onGetProducts,
+        prods, 
+        onUpdateLoggedInUserID,
+        cookies, 
+        openCart,
+        onUpdateCart,
+        onRemoveDataFromCart
+    } = props; 
 
     useEffect(()=>{
         onGetProducts();
     },[onGetProducts]);
+
+    useEffect(()=>{
+
+        cookies.set('openCart', openCart);
+        console.log(cookies.get('openCart') );
+
+    }, [openCart]);
 
     useEffect(()=>{
         const paginatedProductData = prods.slice(0,5);
@@ -45,18 +67,18 @@ const ListProducts = (props) => {
         auth.onIdTokenChanged(user => {
             if(user){
                 onUpdateLoggedInUserID(user.uid);
-                setCookie('UserId', user.uid, {path:'/'});
-                setCookie('userIsLoggedIn',true, {path:'/'});
+                cookies.set('UserId', user.uid, {path:'/'});
+                cookies.set('userIsLoggedIn',true, {path:'/'});
 
                 
             } else {
                 onUpdateLoggedInUserID(null);
-                setCookie('UserId', null, {path:'/'});
-                setCookie('userIsLoggedIn',false, {path:'/'});
+                cookies.set('UserId', null, {path:'/'});
+                cookies.set('userIsLoggedIn',false, {path:'/'});
             }
         });
         
-    }, [onUpdateLoggedInUserID,setCookie]);
+    }, []);
 
     const [paginatedData, setPaginatedData] = useState([]);
 
@@ -68,9 +90,27 @@ const ListProducts = (props) => {
         setPaginatedData(paginatedProductData);
         
         console.log('event is===>>', pageNum, paginatedData);
+        scrollToTop();
+
     };
 
 
+    const onAddToCartHandler =(selectedProduct) => {
+
+        if(checkIfDataExistsAlready(selectedProduct.id, openCart)){
+        
+            return onRemoveDataFromCart(selectedProduct.id);
+        } 
+        
+        return onUpdateCart(selectedProduct);
+        
+        
+        // updateUserDocument(userIdAddedProduct, selectedProduct).then(()=>{
+        //     console.log('updated data successfully to user document', userIdAddedProduct);
+        // });
+        
+        
+    };
    
 
     return (
@@ -80,7 +120,9 @@ const ListProducts = (props) => {
                 paginatedData.map( product => {
                     return (
                         <div key={product.id} className="card">
-                            <button type='button'>Add To Cart</button>
+                            <button 
+                             onClick={() => onAddToCartHandler(product)} type='button'>
+                                 { (checkIfDataExistsAlready(product.id,openCart)) ? 'Added To Cart' :'Add To Cart' }</button>
                             <button type='button'>Buy Now</button>
                             <img src={product.image} width ='120' height= '100' alt="" />
                             <p>{product.category.toUpperCase()}</p>
@@ -112,14 +154,17 @@ const mapStateToProps =(state) => {
         loading: state.prods.loading,
         loggedInID: state.logged.userLoggedInID,
         isloggedIn: state.logged.isLoggedIn,
+        openCart: state.logged.openCart
     };
 };
 
 const mapDispatchToprops = dispatch => {
     return {
         onGetProducts: () => { dispatch(gettingProducts()) },
-        onUpdateLoggedInUserID:(userId) => { dispatch(updateLoggedInUserID(userId))}
+        onUpdateLoggedInUserID:(userId) => { dispatch(updateLoggedInUserID(userId))},
+        onUpdateCart: (selectedData) => { dispatch(updateOpenCart(selectedData))  },
+        onRemoveDataFromCart: (removeDataId) => { dispatch ( removeDataFromCart(removeDataId))}
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToprops)(ListProducts);
+export default connect(mapStateToProps, mapDispatchToprops)(withCookies(ListProducts));
