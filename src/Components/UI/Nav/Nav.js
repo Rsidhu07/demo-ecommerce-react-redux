@@ -15,6 +15,10 @@ const Nav = (props) => {
         console.log('runs on render');
         setIsLoggedIn(JSON.parse(cookies.get('userIsLoggedIn')));
 
+        return ()=> {
+            setIsLoggedIn(false);
+        }
+
     }, [cookies]);
 
     const onSignOutHandler = () => {

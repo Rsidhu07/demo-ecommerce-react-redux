@@ -6,7 +6,6 @@ import ListProducts from './Components/ListProducts/ListProducts';
 import LoginForm from './Components/LoginForm/LoginForm';
 import SignupForm from './Components/SignupForm/SignupForm';
 import Cart from './Components/Cart/Cart';
-import SignOut from './Components/SignOut/SignOut';
 
 
 
@@ -34,10 +33,10 @@ const App = () => {
           <SignupForm />
         </Route>
 
-        <Route path= '/signout' exact>
+        {/* <Route path= '/signout' exact>
           <Nav />
           <SignOut />
-        </Route>
+        </Route> */}
 
         <Route path ='/cart' exact >
           <Nav />
