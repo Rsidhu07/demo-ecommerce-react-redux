@@ -3,6 +3,18 @@
  npm install .\
  npm start / yarn start
 
+ # Points which are covered in the project:-
+
+-Develop an E-commerce demo website with Signup, login, product, cart, logout pages.
+-The site should be built using ReactJs, React-Router, Redux state management.
+-Sign up and login to Auth with the firebase.
+-Maintain Session, if the user refreshes the page, the session must be only terminated only when log out is used.
+-When a user logs in, He/she can see the products (For a list of products, use this https://fakestoreapi.com/ to get the list)
+-User can add/remove products to/from the cart.
+-Products added to cart should be stored in redux state and all the products that are added to cart should be listed on opening /cart.
+-User A's added product in the cart should not affect user B's cart status and vice versa. 
+-Logout when the user wants to logout, cart status must be saved as the user has left it prior to logout. 
+
 ## Available Scripts
 
 In the project directory, you can run:
