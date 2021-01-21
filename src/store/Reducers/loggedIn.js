@@ -12,7 +12,6 @@ const users = ( state = initialState, action) => {
    
     switch (action.type) {
         case actions.UPDATE_LOGGED_IN_USER_ID:
-            console.log('payload in logged in is ===>>', action.payload);
             if(action.payload){
                 return {
                     ...state,
@@ -31,7 +30,6 @@ const users = ( state = initialState, action) => {
         case actions.UPDATE_OPEN_CART: 
             const newArray = [...state.openCart];
             newArray.push(action.payload);
-            console.log('new array in logged in reducer is ===>>', newArray )
             return {
                 ...state,
                 openCart:newArray
@@ -46,6 +44,18 @@ const users = ( state = initialState, action) => {
                 openCart: updatedCart.filter((product) => {
                     return product.id!==action.payload;
                 })
+            };
+
+        case actions.REMOVE_ALL_DATA_FROM_CART:
+            return {
+                ...state,
+                openCart:[]
+            };
+
+        case actions.INIT_DATA_IN_CART:
+            return {
+                ...state,
+                openCart: action.payload
             };
             
         default:

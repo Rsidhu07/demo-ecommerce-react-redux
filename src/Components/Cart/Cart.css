@@ -2,7 +2,10 @@
     display: flex;
     flex: 5;
     width: 100%;
-    justify-content: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    overflow: hidden;
+    padding: 2rem;
 }
 
 .Cart-Card {
@@ -22,4 +25,24 @@
     flex-direction: column;
     align-items: center;
     position: relative;
+}
+
+.Cart-Card button {
+
+    background: linear-gradient(to right top, #8de2d3, #a2eaf5);
+    box-shadow: 6px 6px 20px rgba(122, 122, 122, 0.212);
+    cursor: pointer;
+    outline: none;
+    border-style: none;
+    padding: 0.5rem;
+    color: #ffffff;
+    opacity: 0.9;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    position: absolute;
+    right: 5%;
+}
+
+.Cart h2 {
+    font-size: 2rem;
 }

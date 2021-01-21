@@ -7,7 +7,7 @@ import { auth, getUserDocument } from '../../firebase';
 import {connect} from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
-import {updateLoggedInUserID} from '../../store/Actions/actions';
+import {updateLoggedInUserID, initDataInCart} from '../../store/Actions/actions';
 
 const LoginForm = (props) => {
 
@@ -55,10 +55,8 @@ const LoginForm = (props) => {
     };
 
     const [formValues,setFormValues] = useState(initialState);
-    const [errorMsg, setErrorMsg] =useState(null);
-  
 
-    const {onUpdateLoggedInUserID, history, isloggedIn, cookies} = props;
+    const {onUpdateLoggedInUserID, history, cookies, onInitDataInCart} = props;
 
 
     const authListener = ()=>{
@@ -115,7 +113,6 @@ const LoginForm = (props) => {
             isValidForm: formIsValid
         });
 
-        console.log('formData is =>',updatedFormElement.valid);
     };
 
     const signInWithEmailAndPasswordHandler = (event, formData) => {
@@ -129,7 +126,7 @@ const LoginForm = (props) => {
         const { email, password} = dataToBeSend;
         auth.signInWithEmailAndPassword(email, password)
         .then(user => {
-            console.log('user signed in ', user.user['uid']);
+            console.log('user signed in ', user.user);
             cookies.set('UserId', user.uid, {path:'/'});
             cookies.set('userIsLoggedIn',true, {path:'/'});
 
@@ -137,7 +134,12 @@ const LoginForm = (props) => {
             .then((userRecord) => {
     
                 cookies.set('userDetails', userRecord, {path:'/'});
-                console.log('Successfully fetched user data', userRecord);
+
+                const convertedCartDataToArray = Object.values(userRecord.cart[0]);
+
+                onInitDataInCart(convertedCartDataToArray);
+                console.log('Successfully fetched user data', userRecord, userRecord.cart,
+                convertedCartDataToArray);
     
             })
             .catch((error) => {
@@ -145,7 +147,6 @@ const LoginForm = (props) => {
             });
         })
         .catch(error => {
-          setErrorMsg("Error signing in with password and email!");
           console.error("Error signing in with password and email", error);
         });
       };
@@ -178,12 +179,14 @@ const mapStateToProps = state => {
     return {
         loggedInID: state.logged.userLoggedInID,
         isloggedIn: state.logged.isLoggedIn,
+        openCart: state.logged.openCart
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onUpdateLoggedInUserID:(userId) => { dispatch(updateLoggedInUserID(userId))}
+        onUpdateLoggedInUserID:(userId) => { dispatch(updateLoggedInUserID(userId))},
+        onInitDataInCart: (initCartData) => { dispatch( initDataInCart(initCartData)) }
     }
 };
 

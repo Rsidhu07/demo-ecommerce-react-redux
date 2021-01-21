@@ -6,6 +6,21 @@ export const GETTING_PRODUCTS_SUCCESS = 'GETTING_PRODUCTS_SUCCESS';
 export const UPDATE_LOGGED_IN_USER_ID = 'UPDATE_LOGGED_IN_USER_ID';
 export const UPDATE_OPEN_CART = 'UPDATE_OPEN_CART';
 export const REMOVE_DATA_FROM_CART = 'REMOVE_DATA_FROM_CART';
+export const REMOVE_ALL_DATA_FROM_CART ='REMOVE_ALL_DATA_FROM_CART';
+export const INIT_DATA_IN_CART = 'INIT_DATA_IN_CART';
+
+export const initDataInCart = (initCartData) => {
+    return {
+        type: INIT_DATA_IN_CART,
+        payload: initCartData
+    };
+}
+
+export const removeAllDataFromCart = () => {
+    return {
+        type: REMOVE_ALL_DATA_FROM_CART
+    };
+}
 
 export const removeDataFromCart = (removeDataId) => {
     return {

@@ -2,9 +2,10 @@ import React, { useEffect, useState} from 'react';
 import './ListProducts.css';
 import {connect} from 'react-redux';
 import { gettingProducts, updateLoggedInUserID, updateOpenCart,removeDataFromCart } from '../../store/Actions/actions';
-import Spinner from '../UI/Spinner/Spinner';
 import {withCookies} from 'react-cookie';
-import { auth, updateUserDocument } from '../../firebase';
+import { auth } from '../../firebase';
+import ListProduct from './ListProduct/ListProduct';
+
 
 const checkIfDataExistsAlready =(productId, productData) => {
     
@@ -16,7 +17,7 @@ const checkIfDataExistsAlready =(productId, productData) => {
     return false;
 };
 
-const dynamicLi = (onPageNumberClickedHandler, prods,) => {
+const dynamicLi = (onPageNumberClickedHandler, prods) => {
 
     const li = [];
 
@@ -43,7 +44,8 @@ const ListProducts = (props) => {
         cookies, 
         openCart,
         onUpdateCart,
-        onRemoveDataFromCart
+        onRemoveDataFromCart,
+        isloggedIn
     } = props; 
 
     useEffect(()=>{
@@ -53,7 +55,6 @@ const ListProducts = (props) => {
     useEffect(()=>{
 
         cookies.set('openCart', openCart);
-        console.log(cookies.get('openCart') );
 
     }, [openCart]);
 
@@ -103,47 +104,22 @@ const ListProducts = (props) => {
         } 
         
         return onUpdateCart(selectedProduct);
-        
-        
-        // updateUserDocument(userIdAddedProduct, selectedProduct).then(()=>{
-        //     console.log('updated data successfully to user document', userIdAddedProduct);
-        // });
-        
-        
     };
    
 
     return (
         <div className='ListProducts' >
 
-            {props.loading ? <Spinner/> : 
-                paginatedData.map( product => {
-                    return (
-                        <div key={product.id} className="card">
-                            <button 
-                             onClick={() => onAddToCartHandler(product)} type='button'>
-                                 { (checkIfDataExistsAlready(product.id,openCart)) ? 'Added To Cart' :'Add To Cart' }</button>
-                            <button type='button'>Buy Now</button>
-                            <img src={product.image} width ='120' height= '100' alt="" />
-                            <p>{product.category.toUpperCase()}</p>
-                            <div className="card-info">
-                                <h2>{product.title}</h2>
-                                <p>{product.description}</p>
-                            </div>
-                            <h3> USD {product.price}</h3>
-                         </div>
-                    );
-                })
-            }
-            
-            
+        {isloggedIn? <ListProduct 
+            loading={props.loading}
+            paginatedData={paginatedData}
+            onAddToCartHandler={onAddToCartHandler}
+            checkIfDataExistsAlready={checkIfDataExistsAlready}
+            openCart={openCart}
+            dynamicLi={dynamicLi}
+            onPageNumberClickedHandler={onPageNumberClickedHandler}
+            prods={prods}/> : <h3>User must be logged in to view products</h3>}
 
-            <div className='Page-Numbers'>
-                <ul>
-                   {dynamicLi(onPageNumberClickedHandler,prods).map(li=>li)}
-                </ul>
-            </div>
-            
         </div>
     )
 };

@@ -23,7 +23,6 @@ export const firestore = firebase.firestore();
 
   export const generateUserDocument = async (user, additionalData) => {
 
-    console.log('generate document in firebase gets called with user', user);
     if (!user) return;
     if(!additionalData) return getUserDocument(user);
 
@@ -52,8 +51,6 @@ export const firestore = firebase.firestore();
 
       if(userDocument){
       
-      console.log('user document in firebase is ===>>',userDocument.data());
-
         return {
           ...userDocument.data()
         };
@@ -66,10 +63,8 @@ export const firestore = firebase.firestore();
 
   export const updateUserDocument = async (uid, additionalData) => {
 
-    console.log('update user document in firebase gets called with user', uid);
     if (!uid) return;
 
-    console.log('uid exists in update user document');
 
     const userRef = firestore.doc(`users/${uid}`);
     const snapshot = await userRef.get();
